@@ -1,0 +1,20 @@
+src/**
+.kiro/**
+tsconfig.json
+**/*.map
+**/*.ts
+!out/**
+
+# node_modules ausschließen, nur codicons/dist behalten
+node_modules/**
+!node_modules/@vscode/codicons/dist/codicon.css
+!node_modules/@vscode/codicons/dist/codicon.ttf
+
+# Entwickler-README nicht im VSIX (EXTENSION.md wird via --readme-path als README verwendet)
+README.md
+
+# Docs folder (EXTENSION.md wird via --readme-path eingebunden)
+docs/**
+
+# Screenshot-Platzhalter README nicht im VSIX
+media/screenshots/README.md

@@ -100,51 +100,30 @@ Invoke-WebRequest -Uri http://127.0.0.1:47821 -Method POST `
 
 ---
 
-## Kiro-Hooks einrichten (Produktiv-Betrieb)
+## Kiro-Hooks (automatisch)
 
-Die Hooks in `.kiro/hooks/` müssen in das Projekt kopiert werden, in dem du Kiro nutzt.
+Die Extension erstellt beim ersten Start automatisch die benötigten Kiro-Hooks im Workspace:
 
-### 1. Hooks kopieren
+- `.kiro/hooks/prompt-graph-submit.json` — Fängt Prompts ab
+- `.kiro/hooks/prompt-graph-stop.json` — Erkennt Änderungen nach Kiro-Run
 
-```powershell
-# Aus dem prompt-graph Ordner in dein Zielprojekt:
-Copy-Item ".kiro\hooks\prompt-graph-submit.json" "C:\dein\projekt\.kiro\hooks\"
-Copy-Item ".kiro\hooks\prompt-graph-stop.json"   "C:\dein\projekt\.kiro\hooks\"
-```
+**Keine manuelle Konfiguration nötig.** Einfach die Extension installieren und Kiro nutzen.
 
-### 2. Pfad in den Hook-Dateien anpassen
+### Extension installieren
 
-Öffne beide JSON-Dateien und ersetze den Pfad zum `hookHandler.js`:
-
-```json
-"command": "node \"C:\\Users\\<dein-name>\\.vscode\\extensions\\prompt-graph-0.1.0\\out\\hookHandler.js\" UserPromptSubmit"
-```
-
-Den genauen Pfad findest du so:
-
-```powershell
-# Zeigt alle installierten Extensions an:
-Get-ChildItem "$env:USERPROFILE\.vscode\extensions" | Where-Object Name -like "prompt-graph*"
-```
-
-### 3. Extension installieren
-
-**Variante A — Direkt aus dem Quellcode (empfohlen für Entwicklung):**
+**Variante A — Direkt aus dem Quellcode (für Entwicklung):**
 
 Öffne `prompt-graph` in VS Code/Kiro und drücke F5. Die Extension läuft im Development Host.
 
 **Variante B — Als `.vsix`-Paket:**
 
 ```powershell
-# vsce installieren (einmalig)
-npm install -g @vscode/vsce
-
 # Paket bauen
 cd prompt-graph
-vsce package
+npm run package:extension
 
 # Installieren
-code --install-extension prompt-graph-0.1.0.vsix
+code --install-extension prompt-graph-1.0.0.vsix
 # oder in Kiro: Extensions → "Install from VSIX..."
 ```
 
@@ -155,7 +134,7 @@ code --install-extension prompt-graph-0.1.0.vsix
 ```
 prompt-graph/
 ├── src/
-│   ├── extension.ts          ← Entry Point, Commands
+│   ├── extension.ts          ← Entry Point, Commands, Hook-Setup
 │   ├── sessionCoordinator.ts ← HTTP-Server Port 47821, Snapshot-Logik
 │   ├── history.ts            ← Datenmodell + JSON-Persistenz
 │   ├── snapshot.ts           ← Workspace-Snapshot + Diff
@@ -163,17 +142,20 @@ prompt-graph/
 │   ├── detailPanel.ts        ← WebView-Panel + nativer Diff
 │   └── hookHandler.ts        ← Node-Script für Kiro-Hooks
 ├── out/                      ← Kompilierte JS-Dateien
+├── docs/
+│   └── EXTENSION.md          ← Öffentliche Extension-Seite
 ├── media/
-│   └── icon.svg
-├── .kiro/hooks/
-│   ├── prompt-graph-submit.json  ← Hook: UserPromptSubmit
-│   └── prompt-graph-stop.json   ← Hook: Stop
+│   ├── icon.svg
+│   └── screenshots/          ← Screenshots für Extension-Seite
 ├── .vscode/
 │   ├── launch.json           ← F5-Konfiguration
 │   └── tasks.json            ← Compile/Watch-Tasks
 ├── package.json
+├── LICENSE                   ← MIT License
 └── tsconfig.json
 ```
+
+> **Hinweis:** Die Kiro-Hooks (`.kiro/hooks/prompt-graph-*.json`) werden automatisch beim Start der Extension im jeweiligen Workspace erstellt.
 
 ---
 
