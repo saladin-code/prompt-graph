@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/prompt-graph"><img src="https://img.shields.io/npm/v/prompt-graph?color=blue" alt="npm"></a>
+  <a href="https://github.com/saladin-code/prompt-graph/releases"><img src="https://img.shields.io/github/v/release/saladin-code/prompt-graph?label=download&color=blue" alt="Download"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
 </p>
 
