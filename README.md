@@ -1,144 +1,93 @@
+<p align="center">
+  <img src="media/icon.png" alt="PromptGraph Logo" width="180">
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/prompt-graph"><img src="https://img.shields.io/npm/v/prompt-graph?color=blue" alt="npm"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green" alt="License"></a>
+</p>
+
+<br>
+
 # PromptGraph
 
-**Track every AI prompt and the code changes it produced.**
+> Track every AI prompt and the code changes it produced.
 
-PromptGraph is a VS Code / Kiro extension that automatically captures your AI prompts and connects them with the exact file changes they triggered.
+- 🔄 **Automatic Tracking** — No manual configuration needed
+- 📸 **Snapshots** — Captures workspace state before changes
+- 🔗 **Prompt → Code Mapping** — Links prompts to resulting changes
+- 📊 **Line Statistics** — Shows added/removed lines per file
+- 📅 **Visual Timeline** — Browse prompt history chronologically
+- 🔍 **Native Diff Viewer** — Uses VS Code's built-in diff
 
-![PromptGraph Visual History](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-history.png)
+PromptGraph automatically captures your Kiro AI prompts and connects them with the exact file changes they triggered. Never lose track of what your AI assistant changed.
 
----
+<br>
 
-## Download & Installation
+## Installation
 
-### Option 1: Download VSIX (empfohlen)
+### Download VSIX
 
-1. **[Download prompt-graph-1.0.0.vsix](https://github.com/saladin-code/prompt-graph/releases/latest/download/prompt-graph-1.0.0.vsix)**
+1. **[⬇️ Download prompt-graph-1.0.0.vsix](https://github.com/saladin-code/prompt-graph/releases/latest/download/prompt-graph-1.0.0.vsix)**
 
-2. In VS Code / Kiro installieren:
-   - Extensions-Panel öffnen (`Ctrl+Shift+X`)
-   - Klick auf `...` (oben rechts) → **Install from VSIX...**
-   - Die heruntergeladene `.vsix`-Datei auswählen
+2. In VS Code / Kiro:
+   - Extensions (`Ctrl+Shift+X`) → `...` → **Install from VSIX...**
 
-### Option 2: Manuell bauen
+### Build from source
 
-```powershell
+```bash
 git clone https://github.com/saladin-code/prompt-graph.git
 cd prompt-graph
 npm install
 npm run package:extension
 ```
 
-Dann die erstellte `prompt-graph-1.0.0.vsix` installieren.
-
----
-
-## Features
-
-- **Automatic prompt tracking** — Keine manuelle Konfiguration nötig
-- **Pre-change snapshots** — Erfasst den Workspace-Zustand vor Änderungen
-- **Automatic diff calculation** — Berechnet exakt, was geändert wurde
-- **Prompt → file mapping** — Verknüpft jeden Prompt mit den resultierenden Änderungen
-- **Line statistics** — Zeigt hinzugefügte/entfernte Zeilen pro Datei
-- **Visual timeline** — Durchsuche deine Prompt-History chronologisch
-- **Native diff viewer** — Nutzt den eingebauten VS Code Diff
-
----
+<br>
 
 ## Screenshots
 
-### Prompt Details
+![PromptGraph Visual History](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-history.png)
 
-Klicke auf einen Eintrag, um alle betroffenen Dateien mit Änderungsstatistiken zu sehen.
+<details>
+<summary>📋 Prompt Details</summary>
+<br>
 
 ![PromptGraph Prompt Details](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-prompt-details.png)
+</details>
 
-### Built-in Diff Viewer
-
-Inspiziere die exakten Änderungen für jede Datei.
+<details>
+<summary>🔀 Diff Viewer</summary>
+<br>
 
 ![PromptGraph Diff Viewer](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-diff-viewer.png)
+</details>
 
-### Automatic Tracking
+<br>
 
-PromptGraph arbeitet im Hintergrund — keine manuellen Schritte erforderlich.
-
-![PromptGraph Tracking](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-tracking.png)
-
----
-
-## How It Works
+## How it works
 
 ```
-You send a prompt
-       ↓
-PromptGraph takes a snapshot
-       ↓
-Kiro makes changes
-       ↓
-PromptGraph calculates the diff
-       ↓
-History entry created
+Prompt → Snapshot → Kiro works → Diff → History
 ```
 
-Die Kiro-Hooks werden automatisch beim ersten Start der Extension erstellt:
-- `.kiro/hooks/prompt-graph-submit.json` — Fängt Prompts ab
-- `.kiro/hooks/prompt-graph-stop.json` — Erkennt Änderungen
+The Kiro hooks are created automatically on first start. No configuration needed.
 
----
+<br>
 
 ## Requirements
 
-- **Kiro IDE** (oder VS Code mit Kiro Extension)
-- **Git Repository** (für zuverlässiges File-Tracking)
-- VS Code / Kiro Version **1.85.0** oder höher
+- **Kiro IDE** (or VS Code with Kiro)
+- **Git repository**
+- VS Code / Kiro **≥ 1.85.0**
 
----
-
-## Usage
-
-1. **PromptGraph installieren** (siehe Download oben)
-2. **Workspace öffnen** mit einem Git Repository
-3. **PromptGraph finden** in der Activity Bar (Graph-Icon)
-4. **Kiro nutzen** wie gewohnt
-5. **History ansehen** — Prompts und Änderungen erscheinen automatisch
-
----
-
-## Data Storage
-
-Alle Daten bleiben lokal auf deinem Rechner:
-
-```
-Windows: %USERPROFILE%\.prompt-graph\workspaces\<project>\history.json
-```
-
-Kein Cloud-Sync, keine externen Services.
-
----
+<br>
 
 ## Documentation
 
-| Dokument | Beschreibung |
-|----------|--------------|
-| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Entwickler-Guide: Setup, Hot Reload, Testen |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technische Architektur, Datenfluss, Komponenten |
-| [docs/EXTENSION.md](docs/EXTENSION.md) | Marketplace-Beschreibung |
+- [Development Guide](docs/DEVELOPMENT.md) — Setup, Hot Reload, Testing
+- [Architecture](docs/ARCHITECTURE.md) — Technical details, data flow
 
----
-
-## Quick Start (Development)
-
-```powershell
-git clone https://github.com/saladin-code/prompt-graph.git
-cd prompt-graph
-npm install
-npm run watch
-# Dann F5 in VS Code/Kiro drücken
-```
-
-Ausführliche Anleitung: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
-
----
+<br>
 
 ## License
 
