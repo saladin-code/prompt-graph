@@ -1,179 +1,145 @@
 # PromptGraph
 
-VS Code / Kiro Extension — verfolgt automatisch, welche Prompts welche Codeänderungen ausgelöst haben.
+**Track every AI prompt and the code changes it produced.**
 
-```
-Prompt absenden → Snapshot → Kiro arbeitet → Diff berechnen → History-Eintrag
-```
+PromptGraph is a VS Code / Kiro extension that automatically captures your AI prompts and connects them with the exact file changes they triggered.
 
----
-
-## Voraussetzungen
-
-- **Node.js** ≥ 18
-- **npm** ≥ 9
-- **VS Code** oder **Kiro IDE** (≥ 1.85)
+![PromptGraph Visual History](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-history.png)
 
 ---
 
-## Entwicklung (Hot Reload)
+## Download & Installation
 
-Das ist der normale Entwicklungsweg — du arbeitest direkt im Quellcode, Änderungen werden automatisch kompiliert und du kannst die Extension sofort testen.
+### Option 1: Download VSIX (empfohlen)
 
-### 1. Abhängigkeiten installieren
+1. **[Download prompt-graph-1.0.0.vsix](https://github.com/saladin-code/prompt-graph/releases/latest/download/prompt-graph-1.0.0.vsix)**
+
+2. In VS Code / Kiro installieren:
+   - Extensions-Panel öffnen (`Ctrl+Shift+X`)
+   - Klick auf `...` (oben rechts) → **Install from VSIX...**
+   - Die heruntergeladene `.vsix`-Datei auswählen
+
+### Option 2: Manuell bauen
 
 ```powershell
+git clone https://github.com/saladin-code/prompt-graph.git
 cd prompt-graph
 npm install
-```
-
-### 2. Extension Development Host starten
-
-Öffne den `prompt-graph`-Ordner in VS Code / Kiro:
-
-```powershell
-code .
-# oder
-kiro .
-```
-
-Dann **F5** drücken (oder Run → Start Debugging).
-
-Das startet automatisch:
-- den TypeScript-Compiler im Watch-Modus
-- ein neues **Extension Development Host**-Fenster mit der geladenen Extension
-
-### 3. Hot Reload im laufenden Betrieb
-
-Wenn du eine `.ts`-Datei änderst und speicherst:
-
-1. TypeScript kompiliert automatisch im Hintergrund (Watch-Task)
-2. Im Extension Development Host Fenster: **Strg+R** (Windows) / **Cmd+R** (Mac) drücken
-3. Extension wird neu geladen — Änderungen sind sofort aktiv
-
-> **Tipp:** Den TypeScript-Watch-Task kannst du auch manuell starten:
-> ```powershell
-> npm run watch
-> ```
-
-### Konfigurationen in `.vscode/launch.json`
-
-| Konfiguration | Beschreibung |
-|---|---|
-| `Run Extension` | Kompiliert einmalig, startet Extension Host |
-| `Watch + Run Extension` | Watch-Modus + Extension Host (empfohlen für Entwicklung) |
-
----
-
-## Testen (manuell, ohne Kiro-Hooks)
-
-Du kannst die Extension direkt im Extension Development Host testen, ohne echte Kiro-Hooks einzurichten.
-
-### Testdaten per HTTP einspielen
-
-Der `SessionCoordinator` lauscht auf Port **47821**. Du kannst Testevents direkt per `curl` oder PowerShell schicken:
-
-**Schritt 1 — Prompt simulieren:**
-
-```powershell
-$body = '{"event":"UserPromptSubmit","prompt":"Erstelle einen UserService"}'
-Invoke-WebRequest -Uri http://127.0.0.1:47821 -Method POST `
-  -ContentType "application/json" -Body $body
-```
-
-**Schritt 2 — Eine Datei im Workspace ändern** (damit die Extension einen Diff erkennt).
-
-**Schritt 3 — Stop-Event simulieren:**
-
-```powershell
-$body = '{"event":"Stop"}'
-Invoke-WebRequest -Uri http://127.0.0.1:47821 -Method POST `
-  -ContentType "application/json" -Body $body
-```
-
-→ In der Sidebar (Graph-Icon in der Activity Bar) erscheint jetzt der neue Eintrag.
-
-### Eintrag anklicken
-
-- Klick auf einen Eintrag in der Liste öffnet das **Detail-Panel**
-- Klick auf **View Changes** öffnet den nativen VS Code Diff (Before ↔ After)
-
----
-
-## Kiro-Hooks (automatisch)
-
-Die Extension erstellt beim ersten Start automatisch die benötigten Kiro-Hooks im Workspace:
-
-- `.kiro/hooks/prompt-graph-submit.json` — Fängt Prompts ab
-- `.kiro/hooks/prompt-graph-stop.json` — Erkennt Änderungen nach Kiro-Run
-
-**Keine manuelle Konfiguration nötig.** Einfach die Extension installieren und Kiro nutzen.
-
-### Extension installieren
-
-**Variante A — Direkt aus dem Quellcode (für Entwicklung):**
-
-Öffne `prompt-graph` in VS Code/Kiro und drücke F5. Die Extension läuft im Development Host.
-
-**Variante B — Als `.vsix`-Paket:**
-
-```powershell
-# Paket bauen
-cd prompt-graph
 npm run package:extension
-
-# Installieren
-code --install-extension prompt-graph-1.0.0.vsix
-# oder in Kiro: Extensions → "Install from VSIX..."
 ```
+
+Dann die erstellte `prompt-graph-1.0.0.vsix` installieren.
 
 ---
 
-## Projektstruktur
+## Features
 
-```
-prompt-graph/
-├── src/
-│   ├── extension.ts          ← Entry Point, Commands, Hook-Setup
-│   ├── sessionCoordinator.ts ← HTTP-Server Port 47821, Snapshot-Logik
-│   ├── history.ts            ← Datenmodell + JSON-Persistenz
-│   ├── snapshot.ts           ← Workspace-Snapshot + Diff
-│   ├── historyProvider.ts    ← TreeView (Sidebar-Liste)
-│   ├── detailPanel.ts        ← WebView-Panel + nativer Diff
-│   └── hookHandler.ts        ← Node-Script für Kiro-Hooks
-├── out/                      ← Kompilierte JS-Dateien
-├── docs/
-│   └── EXTENSION.md          ← Öffentliche Extension-Seite
-├── media/
-│   ├── icon.svg
-│   └── screenshots/          ← Screenshots für Extension-Seite
-├── .vscode/
-│   ├── launch.json           ← F5-Konfiguration
-│   └── tasks.json            ← Compile/Watch-Tasks
-├── package.json
-├── LICENSE                   ← MIT License
-└── tsconfig.json
-```
-
-> **Hinweis:** Die Kiro-Hooks (`.kiro/hooks/prompt-graph-*.json`) werden automatisch beim Start der Extension im jeweiligen Workspace erstellt.
+- **Automatic prompt tracking** — Keine manuelle Konfiguration nötig
+- **Pre-change snapshots** — Erfasst den Workspace-Zustand vor Änderungen
+- **Automatic diff calculation** — Berechnet exakt, was geändert wurde
+- **Prompt → file mapping** — Verknüpft jeden Prompt mit den resultierenden Änderungen
+- **Line statistics** — Zeigt hinzugefügte/entfernte Zeilen pro Datei
+- **Visual timeline** — Durchsuche deine Prompt-History chronologisch
+- **Native diff viewer** — Nutzt den eingebauten VS Code Diff
 
 ---
 
-## Daten & Persistenz
+## Screenshots
 
-Die History wird lokal gespeichert unter:
+### Prompt Details
 
-```
-Windows: %APPDATA%\Code\User\globalStorage\prompt-graph\history.json
-```
+Klicke auf einen Eintrag, um alle betroffenen Dateien mit Änderungsstatistiken zu sehen.
 
-Mit dem Trash-Icon in der Sidebar-Titelleiste kann die History komplett geleert werden.
+![PromptGraph Prompt Details](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-prompt-details.png)
+
+### Built-in Diff Viewer
+
+Inspiziere die exakten Änderungen für jede Datei.
+
+![PromptGraph Diff Viewer](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-diff-viewer.png)
+
+### Automatic Tracking
+
+PromptGraph arbeitet im Hintergrund — keine manuellen Schritte erforderlich.
+
+![PromptGraph Tracking](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-tracking.png)
 
 ---
 
-## Bekannte Einschränkungen (MVP)
+## How It Works
 
-- Binärdateien werden beim Snapshot ignoriert
-- Der Diff-Algorithmus ist ein einfacher Zeilenvergleich (kein Myers-Diff)
-- Snapshot kann bei sehr großen Projekten (>10k Dateien) langsam sein — `node_modules`, `dist`, `out` werden automatisch ignoriert
-- Kein Undo/Restore, kein Cloud-Sync, kein Graph
+```
+You send a prompt
+       ↓
+PromptGraph takes a snapshot
+       ↓
+Kiro makes changes
+       ↓
+PromptGraph calculates the diff
+       ↓
+History entry created
+```
+
+Die Kiro-Hooks werden automatisch beim ersten Start der Extension erstellt:
+- `.kiro/hooks/prompt-graph-submit.json` — Fängt Prompts ab
+- `.kiro/hooks/prompt-graph-stop.json` — Erkennt Änderungen
+
+---
+
+## Requirements
+
+- **Kiro IDE** (oder VS Code mit Kiro Extension)
+- **Git Repository** (für zuverlässiges File-Tracking)
+- VS Code / Kiro Version **1.85.0** oder höher
+
+---
+
+## Usage
+
+1. **PromptGraph installieren** (siehe Download oben)
+2. **Workspace öffnen** mit einem Git Repository
+3. **PromptGraph finden** in der Activity Bar (Graph-Icon)
+4. **Kiro nutzen** wie gewohnt
+5. **History ansehen** — Prompts und Änderungen erscheinen automatisch
+
+---
+
+## Data Storage
+
+Alle Daten bleiben lokal auf deinem Rechner:
+
+```
+Windows: %USERPROFILE%\.prompt-graph\workspaces\<project>\history.json
+```
+
+Kein Cloud-Sync, keine externen Services.
+
+---
+
+## Documentation
+
+| Dokument | Beschreibung |
+|----------|--------------|
+| [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) | Entwickler-Guide: Setup, Hot Reload, Testen |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technische Architektur, Datenfluss, Komponenten |
+| [docs/EXTENSION.md](docs/EXTENSION.md) | Marketplace-Beschreibung |
+
+---
+
+## Quick Start (Development)
+
+```powershell
+git clone https://github.com/saladin-code/prompt-graph.git
+cd prompt-graph
+npm install
+npm run watch
+# Dann F5 in VS Code/Kiro drücken
+```
+
+Ausführliche Anleitung: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md)
+
+---
+
+## License
+
+[MIT](LICENSE) — Created by [saladin-code](https://github.com/saladin-code)
