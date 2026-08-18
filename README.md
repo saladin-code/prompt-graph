@@ -46,21 +46,17 @@ npm run package:extension
 
 ## Screenshots
 
+### Visual Timeline
+
 ![PromptGraph Visual History](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-history.png)
 
-<details>
-<summary>📋 Prompt Details</summary>
-<br>
+### Prompt Details
 
 ![PromptGraph Prompt Details](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-prompt-details.png)
-</details>
 
-<details>
-<summary>🔀 Diff Viewer</summary>
-<br>
+### Diff Viewer
 
 ![PromptGraph Diff Viewer](https://raw.githubusercontent.com/saladin-code/prompt-graph/master/media/screenshots/promptgraph-diff-viewer.png)
-</details>
 
 <br>
 
